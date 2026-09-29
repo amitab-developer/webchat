@@ -1,0 +1,11 @@
+name: templateon-webchat
+services:
+  webchat:
+    project: .
+    dist: .deployment-staging
+    language: py
+    host: appservice
+    hooks:
+      prepackage:
+        shell: pwsh
+        run: ./infra/scripts/prepackage-webchat.ps1

@@ -1,0 +1,15 @@
+.venv/
+node_modules/
+dist/
+.env
+.azure/*/.env
+__pycache__/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.npm-cache/
+data/
+.deployment-staging/
+.vscode/edge-debug-profile/
+*.pyc
+npm-debug.log*

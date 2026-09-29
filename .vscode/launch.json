@@ -1,0 +1,97 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Workspace : Clean",
+      "type": "node-terminal",
+      "request": "launch",
+      "command": "pwsh -NoProfile -ExecutionPolicy Bypass -File .vscode\\scripts\\clean_workspace.ps1",
+      "cwd": "${workspaceFolder}",
+      "presentation": {
+        "group": "workspace",
+        "order": 1
+      }
+    },
+    {
+      "name": "Infra : Cosmos Database",
+      "type": "node-terminal",
+      "request": "launch",
+      "command": ".\\.venv\\Scripts\\python.exe .vscode\\scripts\\local_dev.py up --services cosmos",
+      "cwd": "${workspaceFolder}",
+      "presentation": {
+        "group": "webchat-infrastructure",
+        "order": 1
+      }
+    },
+    {
+      "name": "Backend",
+      "type": "debugpy",
+      "request": "launch",
+      "module": "uvicorn",
+      "args": [
+        "backend.main:app",
+        "--host",
+        "127.0.0.1",
+        "--port",
+        "8000"
+      ],
+      "cwd": "${workspaceFolder}",
+      "env": {
+        "PYTHONPATH": "${workspaceFolder}/src"
+      },
+      "envFile": "${workspaceFolder}/.azure/local/.env",
+      "preLaunchTask": "webchat: preflight",
+      "jinja": true,
+      "justMyCode": true,
+      "presentation": {
+        "group": "webchat",
+        "order": 2,
+        "hidden": true
+      }
+    },
+    {
+      "name": "Frontend",
+      "type": "pwa-msedge",
+      "request": "launch",
+      "url": "http://127.0.0.1:5173",
+      "runtimeExecutable": "C:\\Program Files (x86)\\Microsoft\\Edge\\Application\\msedge.exe",
+      "userDataDir": "${workspaceFolder}\\.vscode\\edge-debug-profile",
+      "webRoot": "${workspaceFolder}/src/frontend/src",
+      "preLaunchTask": "webchat: frontend after backend",
+      "presentation": {
+        "group": "webchat",
+        "order": 3,
+        "hidden": true
+      }
+    },
+    {
+      "name": "API Tests",
+      "type": "debugpy",
+      "request": "launch",
+      "module": "pytest",
+      "args": [
+        "-q"
+      ],
+      "cwd": "${workspaceFolder}",
+      "envFile": "${workspaceFolder}/.azure/local/.env",
+      "justMyCode": true,
+      "presentation": {
+        "hidden": true
+      }
+    }
+  ],
+  "compounds": [
+    {
+      "name": "WebChat : Backend + Frontend",
+      "configurations": [
+        "Backend",
+        "Frontend"
+      ],
+      "presentation": {
+        "group": "webchat",
+        "order": 4
+      },
+      "stopAll": true
+    }
+  ]
+}

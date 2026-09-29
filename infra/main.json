@@ -1,0 +1,1017 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2018-05-01/subscriptionDeploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "metadata": {
+    "_generator": {
+      "name": "bicep",
+      "version": "0.42.1.51946",
+      "templateHash": "14604463463716054736"
+    }
+  },
+  "parameters": {
+    "environment": {
+      "type": "string",
+      "metadata": {
+        "description": "AZD environment name used to tag and scope the deployment."
+      }
+    },
+    "location": {
+      "type": "string",
+      "metadata": {
+        "description": "Primary Azure region for the deployment."
+      }
+    },
+    "additionalTagsJSON": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "JSON string of additional tags applied to provisioned resources."
+      }
+    },
+    "resourceGroupName": {
+      "type": "string",
+      "metadata": {
+        "description": "Resource group to create or update."
+      }
+    },
+    "webAppName": {
+      "type": "string",
+      "metadata": {
+        "description": "Globally unique name for the Web Chat App Service."
+      }
+    },
+    "appServicePlanName": {
+      "type": "string",
+      "metadata": {
+        "description": "Name of the Linux App Service plan."
+      }
+    },
+    "appServicePlanJSON": {
+      "type": "string",
+      "defaultValue": "{\"sku\":{\"tier\":\"Basic\",\"name\":\"B1\",\"capacity\":1}}",
+      "metadata": {
+        "description": "JSON object for the Linux App Service plan configuration."
+      }
+    },
+    "userAssignedIdentityName": {
+      "type": "string",
+      "metadata": {
+        "description": "Name of the user-assigned managed identity."
+      }
+    },
+    "logAnalyticsWorkspaceName": {
+      "type": "string",
+      "metadata": {
+        "description": "Name of the Log Analytics workspace."
+      }
+    },
+    "applicationInsightsName": {
+      "type": "string",
+      "metadata": {
+        "description": "Name of Application Insights."
+      }
+    },
+    "azureOpenAIName": {
+      "type": "string",
+      "metadata": {
+        "description": "Name of the Azure AI Foundry/OpenAI-compatible cognitive resource."
+      }
+    },
+    "azureOpenAILocation": {
+      "type": "string",
+      "defaultValue": "[parameters('location')]",
+      "metadata": {
+        "description": "Azure region for the Foundry/OpenAI-compatible resource."
+      }
+    },
+    "azureOpenAIApiVersion": {
+      "type": "string",
+      "metadata": {
+        "description": "Azure OpenAI-compatible API version used by the application runtime."
+      }
+    },
+    "azureOpenAIDeploymentSkuName": {
+      "type": "string",
+      "defaultValue": "GlobalStandard",
+      "metadata": {
+        "description": "SKU name for Azure OpenAI-compatible model deployments."
+      }
+    },
+    "azureOpenAIChatModelDeployment": {
+      "type": "string",
+      "metadata": {
+        "description": "JSON object for the chat model deployment."
+      }
+    },
+    "azureCosmosAccountName": {
+      "type": "string",
+      "metadata": {
+        "description": "Name of the Azure Cosmos DB account."
+      }
+    },
+    "webchatCosmosDatabaseName": {
+      "type": "string",
+      "defaultValue": "webchat",
+      "metadata": {
+        "description": "Azure Cosmos DB database name for web chat runtime data."
+      }
+    },
+    "webchatCosmosSessionsContainerName": {
+      "type": "string",
+      "defaultValue": "chat_sessions",
+      "metadata": {
+        "description": "Azure Cosmos DB container name for chat session metadata."
+      }
+    },
+    "webchatCosmosMessagesContainerName": {
+      "type": "string",
+      "defaultValue": "chat_messages",
+      "metadata": {
+        "description": "Azure Cosmos DB container name for chat message history."
+      }
+    },
+    "webchatCosmosDocumentsContainerName": {
+      "type": "string",
+      "defaultValue": "webchat_documents",
+      "metadata": {
+        "description": "Azure Cosmos DB container name for uploaded document metadata and extracted text."
+      }
+    },
+    "sessionUploadMaxFileCount": {
+      "type": "string",
+      "defaultValue": "10",
+      "metadata": {
+        "description": "Maximum number of files a user can upload to a session."
+      }
+    },
+    "sessionUploadMaxFileSizeBytes": {
+      "type": "string",
+      "defaultValue": "10485760",
+      "metadata": {
+        "description": "Maximum upload size in bytes for a single session file."
+      }
+    },
+    "sessionUploadSupportedExtensions": {
+      "type": "string",
+      "defaultValue": ".txt,.md,.csv,.vtt,.html,.pdf,.docx,.xlsx,.pptx,.jpg,.jpeg,.png,.bmp,.tif,.tiff,.heif",
+      "metadata": {
+        "description": "Comma-separated list of allowed upload file extensions."
+      }
+    },
+    "chatMaxMessageLength": {
+      "type": "string",
+      "defaultValue": "25000",
+      "metadata": {
+        "description": "Maximum assistant chat message length accepted by the API."
+      }
+    },
+    "deployCommitSha": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "Optional deployment commit SHA to surface in app settings."
+      }
+    },
+    "debugUserPrincipalIds": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "Optional comma-separated list of principal IDs of users deploying/debugging the resources."
+      }
+    },
+    "azurePrincipalId": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "Optional principal ID of the primary Azure deployer/service principal."
+      }
+    }
+  },
+  "variables": {
+    "tags": "[union(if(empty(parameters('additionalTagsJSON')), createObject(), json(parameters('additionalTagsJSON'))), createObject('azd-env-name', parameters('environment')))]"
+  },
+  "resources": [
+    {
+      "type": "Microsoft.Resources/resourceGroups",
+      "apiVersion": "2022-09-01",
+      "name": "[parameters('resourceGroupName')]",
+      "location": "[parameters('location')]",
+      "tags": "[variables('tags')]"
+    },
+    {
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2025-04-01",
+      "name": "rgResources",
+      "resourceGroup": "[parameters('resourceGroupName')]",
+      "properties": {
+        "expressionEvaluationOptions": {
+          "scope": "inner"
+        },
+        "mode": "Incremental",
+        "parameters": {
+          "location": {
+            "value": "[parameters('location')]"
+          },
+          "tags": {
+            "value": "[variables('tags')]"
+          },
+          "webAppName": {
+            "value": "[parameters('webAppName')]"
+          },
+          "appServicePlanName": {
+            "value": "[parameters('appServicePlanName')]"
+          },
+          "appServicePlanConfig": {
+            "value": "[json(parameters('appServicePlanJSON'))]"
+          },
+          "userAssignedIdentityName": {
+            "value": "[parameters('userAssignedIdentityName')]"
+          },
+          "logAnalyticsWorkspaceName": {
+            "value": "[parameters('logAnalyticsWorkspaceName')]"
+          },
+          "applicationInsightsName": {
+            "value": "[parameters('applicationInsightsName')]"
+          },
+          "azureOpenAIName": {
+            "value": "[parameters('azureOpenAIName')]"
+          },
+          "azureOpenAILocation": {
+            "value": "[parameters('azureOpenAILocation')]"
+          },
+          "azureOpenAIApiVersion": {
+            "value": "[parameters('azureOpenAIApiVersion')]"
+          },
+          "azureOpenAIDeploymentSkuName": {
+            "value": "[parameters('azureOpenAIDeploymentSkuName')]"
+          },
+          "azureOpenAIChatModelDeployment": {
+            "value": "[json(parameters('azureOpenAIChatModelDeployment'))]"
+          },
+          "azureCosmosAccountName": {
+            "value": "[parameters('azureCosmosAccountName')]"
+          },
+          "webchatCosmosDatabaseName": {
+            "value": "[parameters('webchatCosmosDatabaseName')]"
+          },
+          "webchatCosmosSessionsContainerName": {
+            "value": "[parameters('webchatCosmosSessionsContainerName')]"
+          },
+          "webchatCosmosMessagesContainerName": {
+            "value": "[parameters('webchatCosmosMessagesContainerName')]"
+          },
+          "webchatCosmosDocumentsContainerName": {
+            "value": "[parameters('webchatCosmosDocumentsContainerName')]"
+          },
+          "sessionUploadMaxFileCount": {
+            "value": "[parameters('sessionUploadMaxFileCount')]"
+          },
+          "sessionUploadMaxFileSizeBytes": {
+            "value": "[parameters('sessionUploadMaxFileSizeBytes')]"
+          },
+          "sessionUploadSupportedExtensions": {
+            "value": "[parameters('sessionUploadSupportedExtensions')]"
+          },
+          "chatMaxMessageLength": {
+            "value": "[parameters('chatMaxMessageLength')]"
+          },
+          "deployCommitSha": {
+            "value": "[parameters('deployCommitSha')]"
+          },
+          "userPrincipalIds": {
+            "value": "[parameters('debugUserPrincipalIds')]"
+          },
+          "azurePrincipalId": {
+            "value": "[parameters('azurePrincipalId')]"
+          }
+        },
+        "template": {
+          "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+          "contentVersion": "1.0.0.0",
+          "metadata": {
+            "_generator": {
+              "name": "bicep",
+              "version": "0.42.1.51946",
+              "templateHash": "12649202336422760305"
+            }
+          },
+          "parameters": {
+            "location": {
+              "type": "string",
+              "defaultValue": "[resourceGroup().location]",
+              "metadata": {
+                "description": "Primary region for all Azure resources."
+              }
+            },
+            "tags": {
+              "type": "object",
+              "defaultValue": {},
+              "metadata": {
+                "description": "Tags applied to provisioned resources."
+              }
+            },
+            "pythonVersion": {
+              "type": "string",
+              "defaultValue": "3.12",
+              "allowedValues": [
+                "3.12",
+                "3.13"
+              ],
+              "metadata": {
+                "description": "Python runtime version for the FastAPI App Service."
+              }
+            },
+            "webAppName": {
+              "type": "string",
+              "metadata": {
+                "description": "Name for the Web Chat App Service."
+              }
+            },
+            "appServicePlanName": {
+              "type": "string",
+              "metadata": {
+                "description": "Name of the Linux App Service plan."
+              }
+            },
+            "appServicePlanConfig": {
+              "type": "object",
+              "defaultValue": {
+                "sku": {
+                  "tier": "Basic",
+                  "name": "B1",
+                  "capacity": 1
+                }
+              },
+              "metadata": {
+                "description": "Configuration for the Linux App Service plan."
+              }
+            },
+            "userAssignedIdentityName": {
+              "type": "string",
+              "metadata": {
+                "description": "Name of the user-assigned managed identity."
+              }
+            },
+            "logAnalyticsWorkspaceName": {
+              "type": "string",
+              "metadata": {
+                "description": "Name of the Log Analytics workspace."
+              }
+            },
+            "applicationInsightsName": {
+              "type": "string",
+              "metadata": {
+                "description": "Name of Application Insights."
+              }
+            },
+            "azureOpenAIName": {
+              "type": "string",
+              "metadata": {
+                "description": "Name of the Azure AI Foundry/OpenAI-compatible cognitive resource."
+              }
+            },
+            "azureOpenAILocation": {
+              "type": "string",
+              "defaultValue": "[parameters('location')]",
+              "metadata": {
+                "description": "Azure region for the Foundry/OpenAI-compatible resource."
+              }
+            },
+            "azureOpenAIApiVersion": {
+              "type": "string",
+              "metadata": {
+                "description": "Azure OpenAI-compatible API version used by the application runtime."
+              }
+            },
+            "azureOpenAIDeploymentSkuName": {
+              "type": "string",
+              "defaultValue": "GlobalStandard",
+              "metadata": {
+                "description": "SKU name for Azure OpenAI-compatible model deployments."
+              }
+            },
+            "azureOpenAIChatModelDeployment": {
+              "type": "object",
+              "metadata": {
+                "description": "Chat model deployment object."
+              }
+            },
+            "azureCosmosAccountName": {
+              "type": "string",
+              "metadata": {
+                "description": "Name of the Azure Cosmos DB account."
+              }
+            },
+            "webchatCosmosDatabaseName": {
+              "type": "string",
+              "defaultValue": "webchat",
+              "metadata": {
+                "description": "Azure Cosmos DB database name for web chat runtime data."
+              }
+            },
+            "webchatCosmosSessionsContainerName": {
+              "type": "string",
+              "defaultValue": "chat_sessions",
+              "metadata": {
+                "description": "Azure Cosmos DB container name for chat session metadata."
+              }
+            },
+            "webchatCosmosMessagesContainerName": {
+              "type": "string",
+              "defaultValue": "chat_messages",
+              "metadata": {
+                "description": "Azure Cosmos DB container name for chat message history."
+              }
+            },
+            "webchatCosmosDocumentsContainerName": {
+              "type": "string",
+              "defaultValue": "webchat_documents",
+              "metadata": {
+                "description": "Azure Cosmos DB container name for uploaded document metadata and extracted text."
+              }
+            },
+            "sessionUploadMaxFileCount": {
+              "type": "string",
+              "defaultValue": "10",
+              "metadata": {
+                "description": "Maximum number of files a user can upload to a session."
+              }
+            },
+            "sessionUploadMaxFileSizeBytes": {
+              "type": "string",
+              "defaultValue": "10485760",
+              "metadata": {
+                "description": "Maximum upload size in bytes for a single session file."
+              }
+            },
+            "sessionUploadSupportedExtensions": {
+              "type": "string",
+              "defaultValue": ".txt,.md,.csv,.vtt,.html,.pdf,.docx,.xlsx,.pptx,.jpg,.jpeg,.png,.bmp,.tif,.tiff,.heif",
+              "metadata": {
+                "description": "Comma-separated list of allowed upload file extensions."
+              }
+            },
+            "chatMaxMessageLength": {
+              "type": "string",
+              "defaultValue": "25000",
+              "metadata": {
+                "description": "Maximum assistant chat message length accepted by the API."
+              }
+            },
+            "deployCommitSha": {
+              "type": "string",
+              "defaultValue": "",
+              "metadata": {
+                "description": "Optional deployment commit SHA to surface in app settings."
+              }
+            },
+            "userPrincipalIds": {
+              "type": "string",
+              "defaultValue": "",
+              "metadata": {
+                "description": "Optional comma-separated list of principal IDs of users deploying/debugging the resources."
+              }
+            },
+            "azurePrincipalId": {
+              "type": "string",
+              "defaultValue": "",
+              "metadata": {
+                "description": "Optional principal ID of the primary Azure deployer/service principal."
+              }
+            }
+          },
+          "variables": {
+            "copy": [
+              {
+                "name": "splitUserPrincipalIds",
+                "count": "[length(split(parameters('userPrincipalIds'), ','))]",
+                "input": "[trim(split(parameters('userPrincipalIds'), ',')[copyIndex('splitUserPrincipalIds')])]"
+              }
+            ],
+            "filteredUserPrincipalIds": "[filter(variables('splitUserPrincipalIds'), lambda('id', not(empty(lambdaVariables('id')))))]",
+            "operationalSupportPrincipalIds": "[union(variables('filteredUserPrincipalIds'), filter(createArray(parameters('azurePrincipalId')), lambda('id', not(empty(lambdaVariables('id'))))))]",
+            "azureOpenAIEndpoint": "[format('https://{0}.cognitiveservices.azure.com/', parameters('azureOpenAIName'))]",
+            "chatModelDeployment": "[union(createObject('version', '', 'capacity', 1), parameters('azureOpenAIChatModelDeployment'))]",
+            "azureOpenAIDeployment": "[string(variables('chatModelDeployment').name)]",
+            "azureOpenAIChatCompletionModel": "[string(variables('chatModelDeployment').model)]",
+            "azureOpenAIChatCompletionModelVersion": "[string(variables('chatModelDeployment').version)]",
+            "azureOpenAIChatDeploymentCapacity": "[int(variables('chatModelDeployment').capacity)]",
+            "cosmosDatabaseScope": "[format('{0}/dbs/{1}', resourceId('Microsoft.DocumentDB/databaseAccounts', parameters('azureCosmosAccountName')), parameters('webchatCosmosDatabaseName'))]",
+            "monitoringMetricsPublisherId": "3913510d-42f4-4e42-8a64-420c390055eb",
+            "cognitiveServicesUserRoleId": "a97b65f3-24c7-4388-baec-2e87135dc908",
+            "cognitiveServicesOpenAIUserRoleId": "5e0bd9bd-7b93-4f28-af87-19fc36ad61bd",
+            "cosmosBuiltInDataContributorRoleDefinitionId": "00000000-0000-0000-0000-000000000002"
+          },
+          "resources": [
+            {
+              "type": "Microsoft.DocumentDB/databaseAccounts/sqlDatabases/containers",
+              "apiVersion": "2024-11-15",
+              "name": "[format('{0}/{1}/{2}', parameters('azureCosmosAccountName'), parameters('webchatCosmosDatabaseName'), parameters('webchatCosmosSessionsContainerName'))]",
+              "properties": {
+                "resource": {
+                  "id": "[parameters('webchatCosmosSessionsContainerName')]",
+                  "partitionKey": {
+                    "paths": [
+                      "/sessionId"
+                    ],
+                    "kind": "Hash"
+                  }
+                }
+              },
+              "dependsOn": [
+                "[resourceId('Microsoft.DocumentDB/databaseAccounts/sqlDatabases', parameters('azureCosmosAccountName'), parameters('webchatCosmosDatabaseName'))]"
+              ]
+            },
+            {
+              "type": "Microsoft.DocumentDB/databaseAccounts/sqlDatabases/containers",
+              "apiVersion": "2024-11-15",
+              "name": "[format('{0}/{1}/{2}', parameters('azureCosmosAccountName'), parameters('webchatCosmosDatabaseName'), parameters('webchatCosmosMessagesContainerName'))]",
+              "properties": {
+                "resource": {
+                  "id": "[parameters('webchatCosmosMessagesContainerName')]",
+                  "partitionKey": {
+                    "paths": [
+                      "/sessionId"
+                    ],
+                    "kind": "Hash"
+                  }
+                }
+              },
+              "dependsOn": [
+                "[resourceId('Microsoft.DocumentDB/databaseAccounts/sqlDatabases', parameters('azureCosmosAccountName'), parameters('webchatCosmosDatabaseName'))]"
+              ]
+            },
+            {
+              "type": "Microsoft.DocumentDB/databaseAccounts/sqlDatabases/containers",
+              "apiVersion": "2024-11-15",
+              "name": "[format('{0}/{1}/{2}', parameters('azureCosmosAccountName'), parameters('webchatCosmosDatabaseName'), parameters('webchatCosmosDocumentsContainerName'))]",
+              "properties": {
+                "resource": {
+                  "id": "[parameters('webchatCosmosDocumentsContainerName')]",
+                  "partitionKey": {
+                    "paths": [
+                      "/sessionId"
+                    ],
+                    "kind": "Hash"
+                  }
+                }
+              },
+              "dependsOn": [
+                "[resourceId('Microsoft.DocumentDB/databaseAccounts/sqlDatabases', parameters('azureCosmosAccountName'), parameters('webchatCosmosDatabaseName'))]"
+              ]
+            },
+            {
+              "type": "Microsoft.DocumentDB/databaseAccounts/sqlDatabases",
+              "apiVersion": "2024-11-15",
+              "name": "[format('{0}/{1}', parameters('azureCosmosAccountName'), parameters('webchatCosmosDatabaseName'))]",
+              "properties": {
+                "resource": {
+                  "id": "[parameters('webchatCosmosDatabaseName')]"
+                }
+              },
+              "dependsOn": [
+                "[resourceId('Microsoft.DocumentDB/databaseAccounts', parameters('azureCosmosAccountName'))]"
+              ]
+            },
+            {
+              "type": "Microsoft.Web/sites/config",
+              "apiVersion": "2024-11-01",
+              "name": "[format('{0}/{1}', parameters('webAppName'), 'appsettings')]",
+              "properties": {
+                "APPLICATIONINSIGHTS_AUTHENTICATION_STRING": "[format('ClientId={0};Authorization=AAD', reference(resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', parameters('userAssignedIdentityName')), '2024-11-30').clientId)]",
+                "APPLICATIONINSIGHTS_CONNECTION_STRING": "[reference(resourceId('Microsoft.Insights/components', parameters('applicationInsightsName')), '2020-02-02').ConnectionString]",
+                "APPINSIGHTS_INSTRUMENTATIONKEY": "[reference(resourceId('Microsoft.Insights/components', parameters('applicationInsightsName')), '2020-02-02').InstrumentationKey]",
+                "AZURE_CLIENT_ID": "[reference(resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', parameters('userAssignedIdentityName')), '2024-11-30').clientId]",
+                "AZURE_COSMOS_ENDPOINT": "[reference(resourceId('Microsoft.DocumentDB/databaseAccounts', parameters('azureCosmosAccountName')), '2024-11-15').documentEndpoint]",
+                "AZURE_FOUNDRY_API_ENDPOINT": "[variables('azureOpenAIEndpoint')]",
+                "AZURE_FOUNDRY_RUNTIME_API_VERSION": "[parameters('azureOpenAIApiVersion')]",
+                "AZURE_FOUNDRY_CHAT_MODEL_DEPLOYMENT": "[variables('azureOpenAIDeployment')]",
+                "CHAT_MAX_MESSAGE_LENGTH": "[parameters('chatMaxMessageLength')]",
+                "DEPLOY_COMMIT_SHA": "[parameters('deployCommitSha')]",
+                "PYTHON_APPLICATIONINSIGHTS_ENABLE_TELEMETRY": "true",
+                "SCM_DO_BUILD_DURING_DEPLOYMENT": "true",
+                "SESSION_UPLOAD_MAX_FILE_COUNT": "[parameters('sessionUploadMaxFileCount')]",
+                "SESSION_UPLOAD_MAX_FILE_SIZE_BYTES": "[parameters('sessionUploadMaxFileSizeBytes')]",
+                "SESSION_UPLOAD_SUPPORTED_EXTENSIONS": "[parameters('sessionUploadSupportedExtensions')]",
+                "UV_NO_EDITABLE": "1",
+                "AZURE_COSMOS_WEBCHAT_DATABASE_NAME": "[parameters('webchatCosmosDatabaseName')]",
+                "AZURE_COSMOS_WEBCHAT_DOCUMENTS_CONTAINER_NAME": "[parameters('webchatCosmosDocumentsContainerName')]",
+                "AZURE_COSMOS_WEBCHAT_MESSAGES_CONTAINER_NAME": "[parameters('webchatCosmosMessagesContainerName')]",
+                "AZURE_COSMOS_WEBCHAT_SESSIONS_CONTAINER_NAME": "[parameters('webchatCosmosSessionsContainerName')]",
+                "WEBSITES_PORT": "8000"
+              },
+              "dependsOn": [
+                "[resourceId('Microsoft.Insights/components', parameters('applicationInsightsName'))]",
+                "[resourceId('Microsoft.DocumentDB/databaseAccounts', parameters('azureCosmosAccountName'))]",
+                "[resourceId('Microsoft.Web/sites', parameters('webAppName'))]",
+                "[resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', parameters('userAssignedIdentityName'))]"
+              ]
+            },
+            {
+              "type": "Microsoft.OperationalInsights/workspaces",
+              "apiVersion": "2025-02-01",
+              "name": "[parameters('logAnalyticsWorkspaceName')]",
+              "location": "[parameters('location')]",
+              "properties": {
+                "retentionInDays": 30,
+                "features": {
+                  "searchVersion": 1
+                },
+                "sku": {
+                  "name": "PerGB2018"
+                }
+              },
+              "tags": "[parameters('tags')]"
+            },
+            {
+              "type": "Microsoft.Insights/components",
+              "apiVersion": "2020-02-02",
+              "name": "[parameters('applicationInsightsName')]",
+              "location": "[parameters('location')]",
+              "kind": "web",
+              "properties": {
+                "Application_Type": "web",
+                "WorkspaceResourceId": "[resourceId('Microsoft.OperationalInsights/workspaces', parameters('logAnalyticsWorkspaceName'))]",
+                "DisableLocalAuth": true
+              },
+              "tags": "[parameters('tags')]",
+              "dependsOn": [
+                "[resourceId('Microsoft.OperationalInsights/workspaces', parameters('logAnalyticsWorkspaceName'))]"
+              ]
+            },
+            {
+              "type": "Microsoft.ManagedIdentity/userAssignedIdentities",
+              "apiVersion": "2024-11-30",
+              "name": "[parameters('userAssignedIdentityName')]",
+              "location": "[parameters('location')]",
+              "tags": "[parameters('tags')]"
+            },
+            {
+              "type": "Microsoft.CognitiveServices/accounts",
+              "apiVersion": "2025-06-01",
+              "name": "[parameters('azureOpenAIName')]",
+              "location": "[parameters('azureOpenAILocation')]",
+              "kind": "AIServices",
+              "identity": {
+                "type": "SystemAssigned"
+              },
+              "sku": {
+                "name": "S0"
+              },
+              "properties": {
+                "customSubDomainName": "[parameters('azureOpenAIName')]",
+                "disableLocalAuth": true,
+                "networkAcls": {
+                  "defaultAction": "Allow",
+                  "virtualNetworkRules": [],
+                  "ipRules": []
+                },
+                "publicNetworkAccess": "Enabled",
+                "allowProjectManagement": true
+              },
+              "tags": "[parameters('tags')]"
+            },
+            {
+              "type": "Microsoft.DocumentDB/databaseAccounts",
+              "apiVersion": "2024-11-15",
+              "name": "[parameters('azureCosmosAccountName')]",
+              "location": "[parameters('location')]",
+              "kind": "GlobalDocumentDB",
+              "properties": {
+                "databaseAccountOfferType": "Standard",
+                "disableLocalAuth": true,
+                "publicNetworkAccess": "Enabled",
+                "enableAutomaticFailover": false,
+                "minimalTlsVersion": "Tls12",
+                "locations": [
+                  {
+                    "locationName": "[parameters('location')]",
+                    "failoverPriority": 0,
+                    "isZoneRedundant": false
+                  }
+                ],
+                "capabilities": [
+                  {
+                    "name": "EnableServerless"
+                  }
+                ],
+                "consistencyPolicy": {
+                  "defaultConsistencyLevel": "Session"
+                }
+              },
+              "tags": "[parameters('tags')]"
+            },
+            {
+              "type": "Microsoft.Web/serverfarms",
+              "apiVersion": "2024-11-01",
+              "name": "[parameters('appServicePlanName')]",
+              "location": "[parameters('location')]",
+              "kind": "linux",
+              "sku": "[parameters('appServicePlanConfig').sku]",
+              "properties": {
+                "reserved": true
+              },
+              "tags": "[parameters('tags')]"
+            },
+            {
+              "type": "Microsoft.Web/sites",
+              "apiVersion": "2024-11-01",
+              "name": "[parameters('webAppName')]",
+              "location": "[parameters('location')]",
+              "kind": "app,linux",
+              "identity": {
+                "type": "UserAssigned",
+                "userAssignedIdentities": {
+                  "[format('{0}', resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', parameters('userAssignedIdentityName')))]": {}
+                }
+              },
+              "properties": {
+                "serverFarmId": "[resourceId('Microsoft.Web/serverfarms', parameters('appServicePlanName'))]",
+                "httpsOnly": true,
+                "siteConfig": {
+                  "linuxFxVersion": "[format('PYTHON|{0}', parameters('pythonVersion'))]",
+                  "alwaysOn": true,
+                  "ftpsState": "Disabled",
+                  "minTlsVersion": "1.2",
+                  "healthCheckPath": "/api/health",
+                  "appCommandLine": "bash -c \"python -m uvicorn backend.main:app --host 0.0.0.0 --port 8000 --workers $(( ($(nproc)*2)+1 ))\""
+                }
+              },
+              "tags": "[union(parameters('tags'), createObject('azd-service-name', 'webchat'))]",
+              "dependsOn": [
+                "[resourceId('Microsoft.Web/serverfarms', parameters('appServicePlanName'))]",
+                "[resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', parameters('userAssignedIdentityName'))]"
+              ]
+            },
+            {
+              "type": "Microsoft.DocumentDB/databaseAccounts/sqlRoleAssignments",
+              "apiVersion": "2024-05-15",
+              "name": "[format('{0}/{1}', parameters('azureCosmosAccountName'), guid(resourceId('Microsoft.DocumentDB/databaseAccounts', parameters('azureCosmosAccountName')), resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', parameters('userAssignedIdentityName')), variables('cosmosBuiltInDataContributorRoleDefinitionId'), variables('cosmosDatabaseScope')))]",
+              "properties": {
+                "principalId": "[reference(resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', parameters('userAssignedIdentityName')), '2024-11-30').principalId]",
+                "roleDefinitionId": "[resourceId('Microsoft.DocumentDB/databaseAccounts/sqlRoleDefinitions', parameters('azureCosmosAccountName'), variables('cosmosBuiltInDataContributorRoleDefinitionId'))]",
+                "scope": "[variables('cosmosDatabaseScope')]"
+              },
+              "dependsOn": [
+                "[resourceId('Microsoft.DocumentDB/databaseAccounts', parameters('azureCosmosAccountName'))]",
+                "[resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', parameters('userAssignedIdentityName'))]"
+              ]
+            },
+            {
+              "copy": {
+                "name": "cosmosDebugUserContributorRoleAssignments",
+                "count": "[length(variables('operationalSupportPrincipalIds'))]"
+              },
+              "type": "Microsoft.DocumentDB/databaseAccounts/sqlRoleAssignments",
+              "apiVersion": "2024-05-15",
+              "name": "[format('{0}/{1}', parameters('azureCosmosAccountName'), guid(resourceId('Microsoft.DocumentDB/databaseAccounts', parameters('azureCosmosAccountName')), variables('operationalSupportPrincipalIds')[copyIndex()], variables('cosmosBuiltInDataContributorRoleDefinitionId'), variables('cosmosDatabaseScope')))]",
+              "properties": {
+                "principalId": "[variables('operationalSupportPrincipalIds')[copyIndex()]]",
+                "roleDefinitionId": "[resourceId('Microsoft.DocumentDB/databaseAccounts/sqlRoleDefinitions', parameters('azureCosmosAccountName'), variables('cosmosBuiltInDataContributorRoleDefinitionId'))]",
+                "scope": "[variables('cosmosDatabaseScope')]"
+              },
+              "dependsOn": [
+                "[resourceId('Microsoft.DocumentDB/databaseAccounts', parameters('azureCosmosAccountName'))]"
+              ]
+            },
+            {
+              "type": "Microsoft.Authorization/roleAssignments",
+              "apiVersion": "2022-04-01",
+              "scope": "[resourceId('Microsoft.CognitiveServices/accounts', parameters('azureOpenAIName'))]",
+              "name": "[guid(subscription().id, resourceId('Microsoft.CognitiveServices/accounts', parameters('azureOpenAIName')), resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', parameters('userAssignedIdentityName')), 'Cognitive Services User')]",
+              "properties": {
+                "roleDefinitionId": "[subscriptionResourceId('Microsoft.Authorization/roleDefinitions', variables('cognitiveServicesUserRoleId'))]",
+                "principalId": "[reference(resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', parameters('userAssignedIdentityName')), '2024-11-30').principalId]",
+                "principalType": "ServicePrincipal"
+              },
+              "dependsOn": [
+                "[resourceId('Microsoft.CognitiveServices/accounts', parameters('azureOpenAIName'))]",
+                "[resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', parameters('userAssignedIdentityName'))]"
+              ]
+            },
+            {
+              "type": "Microsoft.Authorization/roleAssignments",
+              "apiVersion": "2022-04-01",
+              "scope": "[resourceId('Microsoft.CognitiveServices/accounts', parameters('azureOpenAIName'))]",
+              "name": "[guid(subscription().id, resourceId('Microsoft.CognitiveServices/accounts', parameters('azureOpenAIName')), resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', parameters('userAssignedIdentityName')), 'Cognitive Services OpenAI User')]",
+              "properties": {
+                "roleDefinitionId": "[subscriptionResourceId('Microsoft.Authorization/roleDefinitions', variables('cognitiveServicesOpenAIUserRoleId'))]",
+                "principalId": "[reference(resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', parameters('userAssignedIdentityName')), '2024-11-30').principalId]",
+                "principalType": "ServicePrincipal"
+              },
+              "dependsOn": [
+                "[resourceId('Microsoft.CognitiveServices/accounts', parameters('azureOpenAIName'))]",
+                "[resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', parameters('userAssignedIdentityName'))]"
+              ]
+            },
+            {
+              "copy": {
+                "name": "roleAssignmentDebugCognitiveServicesUser",
+                "count": "[length(variables('operationalSupportPrincipalIds'))]"
+              },
+              "type": "Microsoft.Authorization/roleAssignments",
+              "apiVersion": "2022-04-01",
+              "scope": "[resourceId('Microsoft.CognitiveServices/accounts', parameters('azureOpenAIName'))]",
+              "name": "[guid(subscription().id, resourceId('Microsoft.CognitiveServices/accounts', parameters('azureOpenAIName')), variables('operationalSupportPrincipalIds')[copyIndex()], 'Cognitive Services User')]",
+              "properties": {
+                "roleDefinitionId": "[subscriptionResourceId('Microsoft.Authorization/roleDefinitions', variables('cognitiveServicesUserRoleId'))]",
+                "principalId": "[variables('operationalSupportPrincipalIds')[copyIndex()]]"
+              },
+              "dependsOn": [
+                "[resourceId('Microsoft.CognitiveServices/accounts', parameters('azureOpenAIName'))]"
+              ]
+            },
+            {
+              "copy": {
+                "name": "roleAssignmentDebugOpenAIUser",
+                "count": "[length(variables('operationalSupportPrincipalIds'))]"
+              },
+              "type": "Microsoft.Authorization/roleAssignments",
+              "apiVersion": "2022-04-01",
+              "scope": "[resourceId('Microsoft.CognitiveServices/accounts', parameters('azureOpenAIName'))]",
+              "name": "[guid(subscription().id, resourceId('Microsoft.CognitiveServices/accounts', parameters('azureOpenAIName')), variables('operationalSupportPrincipalIds')[copyIndex()], 'Cognitive Services OpenAI User')]",
+              "properties": {
+                "roleDefinitionId": "[subscriptionResourceId('Microsoft.Authorization/roleDefinitions', variables('cognitiveServicesOpenAIUserRoleId'))]",
+                "principalId": "[variables('operationalSupportPrincipalIds')[copyIndex()]]"
+              },
+              "dependsOn": [
+                "[resourceId('Microsoft.CognitiveServices/accounts', parameters('azureOpenAIName'))]"
+              ]
+            },
+            {
+              "type": "Microsoft.Authorization/roleAssignments",
+              "apiVersion": "2022-04-01",
+              "scope": "[resourceId('Microsoft.Insights/components', parameters('applicationInsightsName'))]",
+              "name": "[guid(subscription().id, resourceId('Microsoft.Insights/components', parameters('applicationInsightsName')), resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', parameters('userAssignedIdentityName')), 'Monitoring Metrics Publisher')]",
+              "properties": {
+                "roleDefinitionId": "[subscriptionResourceId('Microsoft.Authorization/roleDefinitions', variables('monitoringMetricsPublisherId'))]",
+                "principalId": "[reference(resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', parameters('userAssignedIdentityName')), '2024-11-30').principalId]",
+                "principalType": "ServicePrincipal"
+              },
+              "dependsOn": [
+                "[resourceId('Microsoft.Insights/components', parameters('applicationInsightsName'))]",
+                "[resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', parameters('userAssignedIdentityName'))]"
+              ]
+            },
+            {
+              "copy": {
+                "name": "roleAssignmentDebugAppInsights",
+                "count": "[length(variables('operationalSupportPrincipalIds'))]"
+              },
+              "type": "Microsoft.Authorization/roleAssignments",
+              "apiVersion": "2022-04-01",
+              "scope": "[resourceId('Microsoft.Insights/components', parameters('applicationInsightsName'))]",
+              "name": "[guid(subscription().id, resourceId('Microsoft.Insights/components', parameters('applicationInsightsName')), variables('operationalSupportPrincipalIds')[copyIndex()], 'Monitoring Metrics Publisher')]",
+              "properties": {
+                "roleDefinitionId": "[subscriptionResourceId('Microsoft.Authorization/roleDefinitions', variables('monitoringMetricsPublisherId'))]",
+                "principalId": "[variables('operationalSupportPrincipalIds')[copyIndex()]]"
+              },
+              "dependsOn": [
+                "[resourceId('Microsoft.Insights/components', parameters('applicationInsightsName'))]"
+              ]
+            },
+            {
+              "type": "Microsoft.Resources/deployments",
+              "apiVersion": "2025-04-01",
+              "name": "azureOpenAIChatDeployment",
+              "properties": {
+                "expressionEvaluationOptions": {
+                  "scope": "inner"
+                },
+                "mode": "Incremental",
+                "parameters": {
+                  "azureOpenAIAccountName": {
+                    "value": "[parameters('azureOpenAIName')]"
+                  },
+                  "deploymentName": {
+                    "value": "[variables('azureOpenAIDeployment')]"
+                  },
+                  "modelName": {
+                    "value": "[variables('azureOpenAIChatCompletionModel')]"
+                  },
+                  "modelVersion": {
+                    "value": "[variables('azureOpenAIChatCompletionModelVersion')]"
+                  },
+                  "deploymentSkuName": {
+                    "value": "[parameters('azureOpenAIDeploymentSkuName')]"
+                  },
+                  "deploymentCapacity": {
+                    "value": "[variables('azureOpenAIChatDeploymentCapacity')]"
+                  }
+                },
+                "template": {
+                  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+                  "contentVersion": "1.0.0.0",
+                  "metadata": {
+                    "_generator": {
+                      "name": "bicep",
+                      "version": "0.42.1.51946",
+                      "templateHash": "8957208129033654900"
+                    }
+                  },
+                  "parameters": {
+                    "azureOpenAIAccountName": {
+                      "type": "string",
+                      "metadata": {
+                        "description": "Name of the Azure AI Foundry/OpenAI-compatible account."
+                      }
+                    },
+                    "deploymentName": {
+                      "type": "string",
+                      "metadata": {
+                        "description": "Name of the model deployment."
+                      }
+                    },
+                    "modelName": {
+                      "type": "string",
+                      "metadata": {
+                        "description": "Model name to deploy."
+                      }
+                    },
+                    "modelVersion": {
+                      "type": "string",
+                      "defaultValue": "",
+                      "metadata": {
+                        "description": "Model version to deploy. Leave empty to use the service default."
+                      }
+                    },
+                    "deploymentSkuName": {
+                      "type": "string",
+                      "defaultValue": "GlobalStandard",
+                      "metadata": {
+                        "description": "Deployment SKU name."
+                      }
+                    },
+                    "deploymentCapacity": {
+                      "type": "int",
+                      "defaultValue": 1,
+                      "metadata": {
+                        "description": "Deployment capacity."
+                      }
+                    }
+                  },
+                  "resources": [
+                    {
+                      "type": "Microsoft.CognitiveServices/accounts/deployments",
+                      "apiVersion": "2025-06-01",
+                      "name": "[format('{0}/{1}', parameters('azureOpenAIAccountName'), parameters('deploymentName'))]",
+                      "sku": {
+                        "name": "[parameters('deploymentSkuName')]",
+                        "capacity": "[parameters('deploymentCapacity')]"
+                      },
+                      "properties": {
+                        "model": "[union(createObject('format', 'OpenAI', 'name', parameters('modelName')), if(empty(parameters('modelVersion')), createObject(), createObject('version', parameters('modelVersion'))))]"
+                      }
+                    }
+                  ]
+                }
+              },
+              "dependsOn": [
+                "[resourceId('Microsoft.CognitiveServices/accounts', parameters('azureOpenAIName'))]"
+              ]
+            }
+          ],
+          "outputs": {
+            "webAppIdentityClientId": {
+              "type": "string",
+              "value": "[reference(resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', parameters('userAssignedIdentityName')), '2024-11-30').clientId]"
+            },
+            "webAppEndpoint": {
+              "type": "string",
+              "value": "[format('https://{0}', reference(resourceId('Microsoft.Web/sites', parameters('webAppName')), '2024-11-01').defaultHostName)]"
+            },
+            "azureOpenAIEndpoint": {
+              "type": "string",
+              "value": "[variables('azureOpenAIEndpoint')]"
+            },
+            "cosmosEndpoint": {
+              "type": "string",
+              "value": "[reference(resourceId('Microsoft.DocumentDB/databaseAccounts', parameters('azureCosmosAccountName')), '2024-11-15').documentEndpoint]"
+            }
+          }
+        }
+      },
+      "dependsOn": [
+        "[subscriptionResourceId('Microsoft.Resources/resourceGroups', parameters('resourceGroupName'))]"
+      ]
+    }
+  ],
+  "outputs": {
+    "AZURE_CLIENT_ID": {
+      "type": "string",
+      "value": "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, parameters('resourceGroupName')), 'Microsoft.Resources/deployments', 'rgResources'), '2025-04-01').outputs.webAppIdentityClientId.value]"
+    },
+    "AZURE_WEBCHAT_ENDPOINT": {
+      "type": "string",
+      "value": "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, parameters('resourceGroupName')), 'Microsoft.Resources/deployments', 'rgResources'), '2025-04-01').outputs.webAppEndpoint.value]"
+    },
+    "AZURE_FOUNDRY_API_ENDPOINT": {
+      "type": "string",
+      "value": "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, parameters('resourceGroupName')), 'Microsoft.Resources/deployments', 'rgResources'), '2025-04-01').outputs.azureOpenAIEndpoint.value]"
+    },
+    "AZURE_COSMOS_ENDPOINT": {
+      "type": "string",
+      "value": "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, parameters('resourceGroupName')), 'Microsoft.Resources/deployments', 'rgResources'), '2025-04-01').outputs.cosmosEndpoint.value]"
+    }
+  }
+}

@@ -1,0 +1,87 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "environment": {
+      "value": "${AZURE_ENV_NAME}"
+    },
+    "location": {
+      "value": "${AZURE_LOCATION}"
+    },
+    "resourceGroupName": {
+      "value": "${AZURE_RESOURCE_GROUP}"
+    },
+    "additionalTagsJSON": {
+      "value": "${AZURE_ADDITIONAL_TAGS_JSON:-{}}"
+    },
+    "webAppName": {
+      "value": "${AZURE_WEBCHAT_APP_NAME}"
+    },
+    "appServicePlanName": {
+      "value": "${AZURE_WEBCHAT_APP_SERVICE_PLAN_NAME}"
+    },
+    "appServicePlanJSON": {
+      "value": "${AZURE_WEBCHAT_APP_SERVICE_PLAN_JSON:-{\"sku\":{\"tier\":\"Basic\",\"name\":\"B1\",\"capacity\":1}}}"
+    },
+    "userAssignedIdentityName": {
+      "value": "${AZURE_USER_ASSIGNED_IDENTITY_NAME}"
+    },
+    "logAnalyticsWorkspaceName": {
+      "value": "${AZURE_LOG_ANALYTICS_WORKSPACE_NAME}"
+    },
+    "applicationInsightsName": {
+      "value": "${AZURE_APPLICATION_INSIGHTS_NAME}"
+    },
+    "azureOpenAIName": {
+      "value": "${AZURE_FOUNDRY_NAME}"
+    },
+    "azureOpenAILocation": {
+      "value": "${AZURE_FOUNDRY_LOCATION}"
+    },
+    "azureOpenAIApiVersion": {
+      "value": "${AZURE_FOUNDRY_RUNTIME_API_VERSION:-2025-04-01-preview}"
+    },
+    "azureOpenAIDeploymentSkuName": {
+      "value": "${AZURE_FOUNDRY_DEPLOYMENT_SKU:-GlobalStandard}"
+    },
+    "azureOpenAIChatModelDeployment": {
+      "value": "${AZURE_FOUNDRY_CHAT_MODEL_DEPLOYMENT}"
+    },
+    "azureCosmosAccountName": {
+      "value": "${AZURE_COSMOS_DATABASE_ACCOUNT_NAME}"
+    },
+    "webchatCosmosDatabaseName": {
+      "value": "${AZURE_COSMOS_WEBCHAT_DATABASE_NAME}"
+    },
+    "webchatCosmosSessionsContainerName": {
+      "value": "${AZURE_COSMOS_WEBCHAT_SESSIONS_CONTAINER_NAME:-chat_sessions}"
+    },
+    "webchatCosmosMessagesContainerName": {
+      "value": "${AZURE_COSMOS_WEBCHAT_MESSAGES_CONTAINER_NAME:-chat_messages}"
+    },
+    "webchatCosmosDocumentsContainerName": {
+      "value": "${AZURE_COSMOS_WEBCHAT_DOCUMENTS_CONTAINER_NAME:-webchat_documents}"
+    },
+    "sessionUploadMaxFileCount": {
+      "value": "${SESSION_UPLOAD_MAX_FILE_COUNT:-10}"
+    },
+    "sessionUploadMaxFileSizeBytes": {
+      "value": "${SESSION_UPLOAD_MAX_FILE_SIZE_BYTES:-10485760}"
+    },
+    "sessionUploadSupportedExtensions": {
+      "value": "${SESSION_UPLOAD_SUPPORTED_EXTENSIONS:-.txt,.md,.csv,.vtt,.html,.pdf,.docx,.xlsx,.pptx,.jpg,.jpeg,.png,.bmp,.tif,.tiff,.heif}"
+    },
+    "chatMaxMessageLength": {
+      "value": "${CHAT_MAX_MESSAGE_LENGTH:-25000}"
+    },
+    "deployCommitSha": {
+      "value": "${DEPLOY_COMMIT_SHA:-}"
+    },
+    "debugUserPrincipalIds": {
+      "value": "${AZURE_DEBUG_PRINCIPAL_IDS:-}"
+    },
+    "azurePrincipalId": {
+      "value": "${AZURE_PRINCIPAL_ID:-}"
+    }
+  }
+}
