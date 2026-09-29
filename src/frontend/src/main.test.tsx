@@ -3,7 +3,7 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import { App } from "./main";
 
-const SESSION_KEY = "templateon.webchat.sessionId";
+const SESSION_KEY = "webchat.sessionId";
 
 const session = {
     id: "session-1",

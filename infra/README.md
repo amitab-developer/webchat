@@ -1,6 +1,6 @@
 # Infrastructure
 
-This directory contains the `azd` Bicep deployment for Templateon WebChat.
+This directory contains the `azd` Bicep deployment for WebChat.
 
 It provisions:
 
@@ -28,15 +28,15 @@ Create/select an `azd` environment, then set the required values:
 ```sh
 azd env new dev
 azd env set AZURE_LOCATION canadacentral
-azd env set AZURE_RESOURCE_GROUP rg-templateon-webchat-dev
-azd env set AZURE_WEBCHAT_APP_NAME app-templateon-webchat-dev
-azd env set AZURE_WEBCHAT_APP_SERVICE_PLAN_NAME asp-templateon-webchat-dev
-azd env set AZURE_USER_ASSIGNED_IDENTITY_NAME id-templateon-webchat-dev
-azd env set AZURE_LOG_ANALYTICS_WORKSPACE_NAME log-templateon-webchat-dev
-azd env set AZURE_APPLICATION_INSIGHTS_NAME appi-templateon-webchat-dev
-azd env set AZURE_FOUNDRY_NAME ai-templateon-webchat-dev
+azd env set AZURE_RESOURCE_GROUP rg-webchat-dev
+azd env set AZURE_WEBCHAT_APP_NAME app-webchat-dev
+azd env set AZURE_WEBCHAT_APP_SERVICE_PLAN_NAME asp-webchat-dev
+azd env set AZURE_USER_ASSIGNED_IDENTITY_NAME id-webchat-dev
+azd env set AZURE_LOG_ANALYTICS_WORKSPACE_NAME log-webchat-dev
+azd env set AZURE_APPLICATION_INSIGHTS_NAME appi-webchat-dev
+azd env set AZURE_FOUNDRY_NAME ai-webchat-dev
 azd env set AZURE_FOUNDRY_LOCATION canadacentral
-azd env set AZURE_COSMOS_DATABASE_ACCOUNT_NAME cosmos-templateon-webchat-dev
+azd env set AZURE_COSMOS_DATABASE_ACCOUNT_NAME cosmos-webchat-dev
 azd env set AZURE_COSMOS_WEBCHAT_DATABASE_NAME webchat
 azd env set AZURE_FOUNDRY_CHAT_MODEL_DEPLOYMENT '{"name":"chat-gpt-5-4-mini","model":"gpt-5.4-mini","version":"2026-03-17","capacity":100}'
 ```

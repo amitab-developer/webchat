@@ -111,7 +111,7 @@ type ToastMessage = {
   createdAt: number;
 };
 
-const SESSION_KEY = "templateon.webchat.sessionId";
+const SESSION_KEY = "webchat.sessionId";
 const TOAST_DURATION_MS = 3200;
 const DEFAULT_SIDEBAR_WIDTH = 280;
 const MIN_SIDEBAR_WIDTH = 220;

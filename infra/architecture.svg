@@ -1,0 +1,147 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="2160" height="870" viewBox="0 0 2160 870">
+  <defs>
+    <linearGradient id="canvas" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#f7fbff"/>
+      <stop offset="1" stop-color="#eaf3f8"/>
+    </linearGradient>
+    <linearGradient id="app" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#0078d4"/>
+      <stop offset="1" stop-color="#005a9e"/>
+    </linearGradient>
+    <linearGradient id="data" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#2b88d8"/>
+      <stop offset="1" stop-color="#175a9c"/>
+    </linearGradient>
+    <linearGradient id="ai" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#7b61c9"/>
+      <stop offset="1" stop-color="#5a3d9b"/>
+    </linearGradient>
+    <linearGradient id="monitor" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#107c5a"/>
+      <stop offset="1" stop-color="#07583f"/>
+    </linearGradient>
+    <filter id="shadow" x="-20%" y="-20%" width="140%" height="150%">
+      <feDropShadow dx="0" dy="8" stdDeviation="10" flood-color="#15324b" flood-opacity="0.14"/>
+    </filter>
+    <marker id="arrow-blue" markerWidth="20" markerHeight="20" refX="19" refY="10" markerUnits="userSpaceOnUse" orient="auto">
+      <path d="M0,0 L20,10 L0,20 Z" fill="#0078d4"/>
+    </marker>
+    <marker id="arrow-purple" markerWidth="20" markerHeight="20" refX="19" refY="10" markerUnits="userSpaceOnUse" orient="auto">
+      <path d="M0,0 L20,10 L0,20 Z" fill="#6b4fb3"/>
+    </marker>
+    <marker id="arrow-green" markerWidth="20" markerHeight="20" refX="19" refY="10" markerUnits="userSpaceOnUse" orient="auto">
+      <path d="M0,0 L20,10 L0,20 Z" fill="#107c5a"/>
+    </marker>
+    <style>
+      .title { font: 700 34px 'Segoe UI', sans-serif; fill: #17324d; }
+      .subtitle { font: 400 17px 'Segoe UI', sans-serif; fill: #557083; }
+      .section { font: 700 16px 'Segoe UI', sans-serif; letter-spacing: 1.6px; fill: #5b7180; }
+      .card-title { font: 700 21px 'Segoe UI', sans-serif; fill: #17324d; }
+      .card-body { font: 400 16px 'Segoe UI', sans-serif; fill: #425b6b; }
+      .card-small { font: 400 14px 'Segoe UI', sans-serif; fill: #587181; }
+      .white-title { font: 700 21px 'Segoe UI', sans-serif; fill: #ffffff; }
+      .white-body { font: 400 16px 'Segoe UI', sans-serif; fill: #e8f4ff; }
+      .label { font: 600 14px 'Segoe UI', sans-serif; fill: #365466; }
+      .legend { font: 400 14px 'Segoe UI', sans-serif; fill: #526b7a; }
+    </style>
+  </defs>
+
+  <rect width="2160" height="870" fill="url(#canvas)"/>
+  <text x="30" y="74" class="title">WebChat</text>
+  <text x="30" y="108" class="subtitle">Azure runtime architecture provisioned by the infra Bicep modules</text>
+
+  <rect x="30" y="145" width="2100" height="650" rx="24" fill="#ffffff" fill-opacity="0.62" stroke="#c7d9e5" stroke-width="2"/>
+  <text x="82" y="184" class="section">USER EXPERIENCE</text>
+  <text x="555" y="184" class="section">APPLICATION RUNTIME</text>
+  <text x="1075" y="184" class="section">DATA &amp; AI SERVICES</text>
+  <text x="1760" y="184" class="section">IDENTITY &amp; ACCESS</text>
+
+  <g opacity="0.72">
+    <rect x="72" y="205" width="390" height="555" rx="18" fill="#f4f9fc" stroke="#d9e7ef" stroke-width="2"/>
+    <rect x="485" y="205" width="505" height="555" rx="18" fill="#f1f7fb" stroke="#d9e7ef" stroke-width="2"/>
+    <rect x="1015" y="205" width="650" height="555" rx="18" fill="#f5f4fb" stroke="#ded9ef" stroke-width="2"/>
+    <rect x="1690" y="205" width="430" height="555" rx="18" fill="#fcf9ef" stroke="#eee2b8" stroke-width="2"/>
+  </g>
+
+  <g filter="url(#shadow)">
+    <rect x="92" y="330" width="300" height="190" rx="18" fill="#ffffff" stroke="#c7d9e5" stroke-width="2"/>
+    <circle cx="143" cy="383" r="27" fill="#e7f2fb"/>
+    <path d="M129 382 h28 M133 374 h20 M133 390 h14" stroke="#0078d4" stroke-width="4" stroke-linecap="round"/>
+    <text x="185" y="380" class="card-title">Web browser</text>
+    <text x="124" y="433" class="card-body">React + Vite client</text>
+    <text x="124" y="460" class="card-small">Chat, uploads, session history</text>
+    <text x="124" y="486" class="card-small">HTTPS to the public app endpoint</text>
+  </g>
+
+  <g filter="url(#shadow)" transform="translate(0 -18)">
+    <rect x="515" y="270" width="440" height="310" rx="20" fill="url(#app)"/>
+    <rect x="545" y="300" width="54" height="54" rx="12" fill="#ffffff" fill-opacity="0.18"/>
+    <path d="M559 312 h25 v30 h-25 z M565 319 h13 M565 327 h13 M565 335 h8" fill="none" stroke="#ffffff" stroke-width="3" stroke-linecap="round"/>
+    <text x="625" y="331" class="white-title">Linux App Service</text>
+    <text x="625" y="358" class="white-body">FastAPI backend + built Vite frontend</text>
+    <line x1="555" y1="395" x2="915" y2="395" stroke="#ffffff" stroke-opacity="0.3"/>
+    <text x="555" y="434" class="white-body">/api/health</text>
+    <text x="555" y="465" class="white-body">Chat sessions and document processing</text>
+    <text x="555" y="496" class="white-body">Python 3.12 runtime, HTTPS only</text>
+    <text x="555" y="540" class="white-body">Uses user-assigned managed identity</text>
+  </g>
+
+  <g filter="url(#shadow)" transform="translate(0 -31)">
+    <rect x="568" y="640" width="335" height="105" rx="16" fill="#ffffff" stroke="#c7d9e5" stroke-width="2"/>
+    <circle cx="615" cy="692" r="25" fill="#e5f4ee"/>
+    <path d="M603 688 l12 -10 12 10 v13 h-24 z M608 692 h14" fill="none" stroke="#107c5a" stroke-width="3"/>
+    <text x="657" y="686" class="card-title">App Service plan</text>
+    <text x="657" y="714" class="card-small">Linux plan, configurable SKU</text>
+  </g>
+
+  <g filter="url(#shadow)" transform="translate(75 33)">
+    <rect x="1060" y="245" width="410" height="190" rx="18" fill="url(#data)"/>
+    <circle cx="1121" cy="292" r="29" fill="#ffffff" fill-opacity="0.18"/>
+    <ellipse cx="1121" cy="283" rx="14" ry="6" fill="none" stroke="#ffffff" stroke-width="3"/>
+    <path d="M1107 283 v18 c0 4 6 7 14 7 s14-3 14-7 v-18" fill="none" stroke="#ffffff" stroke-width="3"/>
+    <path d="M1107 292 c0 4 6 7 14 7 s14-3 14-7" fill="none" stroke="#ffffff" stroke-width="2"/>
+    <text x="1170" y="294" class="white-title">Azure Cosmos DB</text>
+    <text x="1170" y="322" class="white-body">Serverless, session consistency</text>
+    <line x1="1095" y1="345" x2="1435" y2="345" stroke="#ffffff" stroke-opacity="0.3"/>
+    <text x="1095" y="376" class="white-body">webchat database</text>
+    <text x="1095" y="403" class="white-body">chat_sessions · chat_messages · webchat_documents</text>
+  </g>
+
+  <g filter="url(#shadow)" transform="translate(75 56)">
+    <rect x="1060" y="485" width="410" height="145" rx="18" fill="url(#ai)"/>
+    <circle cx="1121" cy="532" r="29" fill="#ffffff" fill-opacity="0.18"/>
+    <path d="M1121 514 l5 12 12 5 -12 5 -5 12 -5-12 -12-5 12-5 z" fill="none" stroke="#ffffff" stroke-width="3" stroke-linejoin="round"/>
+    <circle cx="1139" cy="517" r="3" fill="#ffffff"/>
+    <text x="1170" y="535" class="white-title">Azure AI Foundry / OpenAI</text>
+    <text x="1170" y="564" class="white-body">AIServices account</text>
+    <text x="1170" y="594" class="white-body">Chat model deployment</text>
+    <text x="1170" y="622" class="white-body">Local authentication disabled</text>
+  </g>
+
+  <g fill="none" stroke-width="4">
+    <path d="M392 425 C445 425 460 425 515 425" stroke="#0078d4" marker-end="url(#arrow-blue)"/>
+    <path d="M735 562 L735 609" stroke="#718795" stroke-dasharray="8 8"/>
+    <path d="M955 370 C1030 370 1060 380 1135 380" stroke="#0078d4" marker-end="url(#arrow-blue)"/>
+    <path d="M955 470 C1010 470 1065 560 1135 610" stroke="#6b4fb3" marker-end="url(#arrow-purple)"/>
+  </g>
+
+  <g>
+    <rect x="401" y="365" width="105" height="30" rx="15" fill="#e7f2fb"/>
+    <text x="453" y="386" text-anchor="middle" class="label">HTTPS / API</text>
+  </g>
+
+  <g>
+    <rect x="1750" y="390" width="300" height="150" rx="16" fill="#ffffff" stroke="#e8ce71" stroke-width="2"/>
+    <circle cx="1790" cy="440" r="25" fill="#fff8df"/>
+    <circle cx="1784" cy="440" r="7" fill="none" stroke="#b48a00" stroke-width="3"/>
+    <path d="M1790 440 h14 l5 5 M1804 440 v-5" fill="none" stroke="#b48a00" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+    <text x="1830" y="435" class="card-title">Managed identity</text>
+    <text x="1775" y="480" class="card-small">User-assigned identity</text>
+    <text x="1775" y="507" class="card-small">RBAC to data and AI</text>
+    <text x="1775" y="531" class="card-small">No runtime keys</text>
+    <path d="M1750 455 C1665 435 1605 410 1545 400" fill="none" stroke="#b48a00" stroke-width="3" stroke-dasharray="7 7" marker-end="url(#arrow-blue)"/>
+    <path d="M1750 505 C1665 540 1605 590 1545 610" fill="none" stroke="#b48a00" stroke-width="3" stroke-dasharray="7 7" marker-end="url(#arrow-purple)"/>
+  </g>
+
+  <text x="2130" y="829" text-anchor="end" class="card-small">Generated from infra/main.bicep and infra/resources.bicep</text>
+</svg>

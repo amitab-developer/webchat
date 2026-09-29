@@ -1,4 +1,4 @@
-# Templateon Web Chat
+# WebChat
 
 Standalone generic chat app with a FastAPI backend, React frontend, document upload, document-grounded analysis, optional Azure OpenAI, and optional Cosmos DB persistence.
 

@@ -59,7 +59,7 @@ load_environment()
 class Settings(BaseSettings):
     model_config = SettingsConfigDict(extra="ignore")
 
-    app_name: str = "Templateon Web Chat"
+    app_name: str = "WebChat"
     data_dir: Path = ROOT_DIR / "data"
 
     azure_foundry_api_endpoint: str | None = None
